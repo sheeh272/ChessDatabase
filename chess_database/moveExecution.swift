@@ -16,7 +16,7 @@ struct Moveinfo {
 
 class moveExecution {
     //notation in form Nf3-d2
-    func executeMove(notation:String) -> Moveinfo{
+    func executeMove(notation:String, reverse: Bool) -> Moveinfo{
         var ret = Moveinfo()
         let piece = notation.prefix(1)
         switch piece{
@@ -36,10 +36,17 @@ class moveExecution {
                 ret.piece = "Error"
         }
         let temp = notation.prefix(3)
-        ret.startSquare = String(temp.suffix(2))
-        ret.endSquare = String(notation.suffix(2))
+        if(reverse == false){
+            ret.startSquare = String(temp.suffix(2))
+            ret.endSquare = String(notation.suffix(2))
+        }
+        else{
+            ret.startSquare = String(notation.suffix(2))
+            ret.endSquare = String(temp.suffix(2))
+        }
         return ret
     }
+    
     func getSquareColor(square:String) -> String {
         let file = square.prefix(1)
         let rank = Int(square.suffix(1))!
