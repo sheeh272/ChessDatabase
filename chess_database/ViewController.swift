@@ -7,15 +7,34 @@
 //
 
 import UIKit
+import GRDB
 
 class ViewController: UIViewController {
     var turn = "B"
     var moveList = [String]()
     var index = -1
     var maxIndex = -1
+    var dbQueue = DatabaseQueue()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        do {
+            let databaseURL = try FileManager.default
+            .url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            .appendingPathComponent("db.sqlite")
+            dbQueue = try DatabaseQueue(path: databaseURL.path)
+            try dbQueue.inDatabase { db in
+            try db.execute("""
+            CREATE TABLE chessDatabaseFile (
+            id INTEGER PRIMARY KEY,
+            player1 TEXT NOT NULL,
+            player2 Text NOT NULL,
+            gameScore Text Not NULL)
+            """)
+            }
+        } catch {
+            print(error)
+        }
     }
     
     func CalcIndex(square:String) ->Int{
@@ -117,11 +136,42 @@ class ViewController: UIViewController {
         }
     }
     
+    @IBAction func enterToDatabase(_ sender: Any) {
+        let alert = UIAlertController(title: "Enter Game Data", message: nil, preferredStyle: .alert)
+        alert.addTextField(configurationHandler: { textField in
+            textField.placeholder = "player1"
+        })
+        alert.addTextField(configurationHandler: { textField in
+            textField.placeholder = "player2"
+        })
+        alert.addAction(UIAlertAction(title: "Submit", style: .default, handler: {
+            action in
+            let player1 = (alert.textFields?.first?.text!)!
+            let player2 = (alert.textFields?.last?.text!)!
+            do {
+                try self.dbQueue.inDatabase { db in
+                try db.execute("""
+                INSERT INTO chessDatabaseFile (player1, player2, gameScore)
+                VALUES (?, ?, ?)
+                """, arguments: [player1, player2, self.notationText.text!])
+                //just to test insert worked
+                let notation = try Row.fetchAll(db,"SELECT * FROM chessDatabaseFile")
+                for x in notation{
+                    print(x)
+                }
+                }
+            }
+            catch{
+                print(error)
+            }
+            }))
+            present(alert, animated: true, completion: nil)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
 
     @IBOutlet var chessBoard: [UIImageView]!
-    
 }
