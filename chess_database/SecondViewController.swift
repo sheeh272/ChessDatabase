@@ -12,7 +12,7 @@ import GRDB
 class SecondViewController: UIViewController {
     
     var dbQueue = DatabaseQueue()
-    var data: [Row] = []
+    var data: [String] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,7 +59,7 @@ class SecondViewController: UIViewController {
             let player2 = (alert.textFields?.last?.text!)!
             do {
                 try self.dbQueue.inDatabase { db in
-                self.data = try Row.fetchAll(db,"SELECT gameScore FROM chessDatabaseFile WHERE player1 = ? AND player2 = ?", arguments: [player1, player2])
+                self.data = try String.fetchAll(db,"SELECT gameScore FROM chessDatabaseFile WHERE player1 = ? AND player2 = ?", arguments: [player1, player2])
                 }
             }
             catch{

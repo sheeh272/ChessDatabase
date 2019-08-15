@@ -10,8 +10,9 @@ import UIKit
 import GRDB
 class TableViewController: UITableViewController {
     
-    var data = [Row]()
-
+    var data = [String]()
+    var notation = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -42,13 +43,22 @@ class TableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "LabelCell", for: indexPath)
-
         // Configure the cell...
+        cell.accessoryType = .detailDisclosureButton
         cell.textLabel?.text = String(describing: data[indexPath.row])
         return cell
     }
     
-
+    override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+        notation = String(describing: data[indexPath.row])
+        performSegue(withIdentifier: "SelectGame", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destVC : ViewController = segue.destination as! ViewController
+        destVC.notation = notation
+    }
+    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

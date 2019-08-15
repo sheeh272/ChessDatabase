@@ -15,9 +15,11 @@ class ViewController: UIViewController {
     var index = -1
     var maxIndex = -1
     var dbQueue = DatabaseQueue()
+    var notation = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        notationText.text! = notation
         do {
             let databaseURL = try FileManager.default
             .url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
