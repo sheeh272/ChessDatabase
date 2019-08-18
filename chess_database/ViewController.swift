@@ -82,10 +82,32 @@ class ViewController: UIViewController {
         else {
             let m = moveExecution()
             let info = m.executeMove(notation: notation, reverse: reverse)
+            if(info.endSquare.suffix(1) == "8" && turn == "W" || info.endSquare.suffix(1) == "1" && turn == "B"){
+                let alert = UIAlertController(title: "Select promotion", message: nil, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Queen", style: .default, handler: {action in
+                    self.defultMoveExecution(piece: "Queen" , notation: notation, reverse: reverse)
+                }))
+                alert.addAction(UIAlertAction(title: "Rook", style: .default, handler: {action in
+                    self.defultMoveExecution(piece: "Rook", notation: notation, reverse: reverse)
+                }))
+                alert.addAction(UIAlertAction(title: "Knight", style: .default, handler: {action in
+                    self.defultMoveExecution(piece: "Knight" ,notation: notation, reverse: reverse)
+                }))
+                alert.addAction(UIAlertAction(title: "Bishop", style: .default, handler: {action in
+                    self.defultMoveExecution(piece: "Bishop", notation: notation, reverse: reverse)
+                }))
+                present(alert, animated: true, completion: nil)
+            }
+            defultMoveExecution(piece: info.piece,notation: notation, reverse: reverse)
+        }
+    }
+    func defultMoveExecution(piece: String, notation:String , reverse:Bool) -> Void{
+            let m = moveExecution()
+            let info = m.executeMove(notation: notation, reverse: reverse)
             let color1 = m.getSquareColor(square: info.endSquare)
             let color2 = m.getSquareColor(square: info.startSquare)
             var assetName = ""
-            assetName = assetName + turn + info.piece + color1 + "Square"
+            assetName = assetName + turn + piece + color1 + "Square"
             let pieceImage = UIImage(named: assetName)
             let assetName2 = color2 + "Square"
             let pieceImage2 = UIImage(named: assetName2)
@@ -93,7 +115,6 @@ class ViewController: UIViewController {
             chessBoard[index1].image = pieceImage
             let index2 = CalcIndex(square: info.startSquare)
             chessBoard[index2].image = pieceImage2
-        }
     }
     
     @IBOutlet weak var notationText: UITextField!
@@ -174,6 +195,10 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
+    @IBAction func back(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
+    }
+    
     @IBOutlet var chessBoard: [UIImageView]!
 }
