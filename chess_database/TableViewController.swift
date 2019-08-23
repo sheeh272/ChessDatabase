@@ -12,10 +12,29 @@ class TableViewController: UITableViewController {
     
     var data = [String]()
     var notation = ""
+    var dbQueue = DatabaseQueue()
+    var player1 = "unset"
+    var player2 = "unset"
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        do {
+            let databaseURL = try FileManager.default
+            .url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            .appendingPathComponent("db.sqlite")
+            dbQueue = try DatabaseQueue(path: databaseURL.path)
+            try dbQueue.inDatabase { db in
+            try db.execute("""
+            CREATE TABLE chessDatabaseFile (
+            id INTEGER PRIMARY KEY,
+            player1 TEXT NOT NULL,
+            player2 Text NOT NULL,
+            gameScore Text Not NULL)
+            """)
+            }
+        } catch {
+            print(error)
+        }
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -51,7 +70,26 @@ class TableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
         notation = String(describing: data[indexPath.row])
-        performSegue(withIdentifier: "SelectGame", sender: self)
+        let alert = UIAlertController(title: "Enter Search parameters", message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Delete", style: .default, handler: {
+            action in
+            do {
+                try self.dbQueue.inDatabase { db in
+                    try db.execute("DELETE FROM chessDatabaseFile WHERE gameScore = ?", arguments: [self.notation])
+                }
+                self.data.remove(at: indexPath.row)
+                tableView.reloadData()
+            }
+            catch{
+                print(error)
+            }
+        }))
+         alert.addAction(UIAlertAction(title: "Select", style: .default, handler: {
+            action in
+            self.performSegue(withIdentifier: "SelectGame", sender: self)
+        }))
+        present(alert, animated: true, completion: nil)
+        //performSegue(withIdentifier: "SelectGame", sender: self)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -59,49 +97,7 @@ class TableViewController: UITableViewController {
         destVC.notation = notation
     }
     
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
+    @IBAction func back(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
     }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
