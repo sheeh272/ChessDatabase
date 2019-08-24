@@ -20,6 +20,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         notationText.text! = notation
+        //initialize database
         do {
             let databaseURL = try FileManager.default
             .url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
@@ -37,6 +38,8 @@ class ViewController: UIViewController {
         } catch {
             print(error)
         }
+        //for when segueing from search
+        EnterGameScoreFunc()
     }
     
     func CalcIndex(square:String) ->Int{
@@ -82,6 +85,7 @@ class ViewController: UIViewController {
         else {
             let m = moveExecution()
             let info = m.executeMove(notation: notation, reverse: reverse)
+            //for pawn promotion 
             if(info.endSquare.suffix(1) == "8" && turn == "W" || info.endSquare.suffix(1) == "1" && turn == "B"){
                 let alert = UIAlertController(title: "Select promotion", message: nil, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "Queen", style: .default, handler: {action in
@@ -141,7 +145,8 @@ class ViewController: UIViewController {
         }
     }
     
-    @IBAction func EnterGameScore(_ sender: Any) {
+    //This code needs to be called for initialization too so its pulled out
+    func EnterGameScoreFunc(){
         var acc = ""
         for x in notationText.text! {
             if(x != " "){
@@ -157,6 +162,10 @@ class ViewController: UIViewController {
             moveList.append(acc)
             maxIndex = maxIndex + 1
         }
+    }
+    
+    @IBAction func EnterGameScore(_ sender: Any) {
+        EnterGameScoreFunc()
     }
     
     @IBAction func enterToDatabase(_ sender: Any) {
@@ -177,11 +186,6 @@ class ViewController: UIViewController {
                 INSERT INTO chessDatabaseFile (player1, player2, gameScore)
                 VALUES (?, ?, ?)
                 """, arguments: [player1, player2, self.notationText.text!])
-                //just to test insert worked
-                let notation = try Row.fetchAll(db,"SELECT * FROM chessDatabaseFile")
-                for x in notation{
-                    print(x)
-                }
                 }
             }
             catch{

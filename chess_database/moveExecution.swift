@@ -47,6 +47,7 @@ class moveExecution {
         return ret
     }
     
+    //the logic of this function is that alternating ranks/files are equivalent in therms of color
     func getSquareColor(square:String) -> String {
         let file = square.prefix(1)
         let rank = Int(square.suffix(1))!

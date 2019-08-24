@@ -13,8 +13,6 @@ class TableViewController: UITableViewController {
     var data = [String]()
     var notation = ""
     var dbQueue = DatabaseQueue()
-    var player1 = "unset"
-    var player2 = "unset"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,31 +33,21 @@ class TableViewController: UITableViewController {
         } catch {
             print(error)
         }
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
     // MARK: - Table view data source
-
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
         return data.count
     }
 
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "LabelCell", for: indexPath)
         // Configure the cell...
@@ -70,7 +58,7 @@ class TableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
         notation = String(describing: data[indexPath.row])
-        let alert = UIAlertController(title: "Enter Search parameters", message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: "Select or Delete", message: nil, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Delete", style: .default, handler: {
             action in
             do {
@@ -89,7 +77,6 @@ class TableViewController: UITableViewController {
             self.performSegue(withIdentifier: "SelectGame", sender: self)
         }))
         present(alert, animated: true, completion: nil)
-        //performSegue(withIdentifier: "SelectGame", sender: self)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
