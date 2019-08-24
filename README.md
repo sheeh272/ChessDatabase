@@ -1,1 +1,2 @@
 # ChessDatabase
+Chess database app using swift and GRDB a SQLite framework.  The chessboard is programmed with a matrix of UIImageViews.  Based on the inputted notation the correct asset and correct placement in the chessboard matrix is updated so the game can be played through.  The home screen allows the user to choose between entering a game and searching for games by player names.  After the games are returned the user can choose between deleting the game or selecting it to play through.
